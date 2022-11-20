@@ -76,11 +76,13 @@ function ListProposals({ workflowStatus, voter }) {
         return (
           <li key={data.proposalId}>
             {data.description} - Vote(s) : {data.voteCount}{" "}
-            {workflowStatus === WorkflowStatus.VotingSessionStarted && (
-              <button onClick={vote} name={data.proposalId}>
-                Vote for this proposal
-              </button>
-            )}
+            {workflowStatus === WorkflowStatus.VotingSessionStarted &&
+              voter.isRegistered &&
+              !voter.hasVoted && (
+                <button onClick={vote} name={data.proposalId}>
+                  Vote for this proposal
+                </button>
+              )}
           </li>
         );
       });
@@ -92,7 +94,7 @@ function ListProposals({ workflowStatus, voter }) {
     <>
       <h3>Proposals list</h3>
       <div>
-        {voter ? (
+        {voter.isRegistered ? (
           proposals.length > 0 ? (
             <ul>{proposals}</ul>
           ) : (

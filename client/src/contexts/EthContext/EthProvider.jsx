@@ -5,7 +5,6 @@ import { reducer, actions, initialState } from "./state";
 
 function EthProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
-  //const [workflowStatus, setWorkflowStatus] = useState(0);
 
   const init = useCallback(async (artifact) => {
     if (artifact) {
@@ -25,22 +24,6 @@ function EthProvider({ children }) {
       // Get the contract owner
       let owner = await contract.methods.owner().call({ from: accounts[0] });
       isAdmin = owner === accounts[0] ? true : false;
-      //Check if current user is a registered voter. If so, voter will be defined
-      /*try {
-        voter = await contract.methods
-          .getVoter(accounts[0])
-          .call({ from: accounts[0] });
-      } catch (error) {
-        if (
-          error &&
-          error.message &&
-          error.message.includes("You're not a voter")
-        ) {
-          console.info("Current user is not a voter");
-        }
-      }*/
-
-      //console.log("voter:", voter);
       console.log("isAdmin: ", isAdmin);
 
       dispatch({
@@ -56,20 +39,6 @@ function EthProvider({ children }) {
       });
     }
   }, []);
-
-  /*useEffect(() => {
-    (async function () {
-      //Keep the current workflow status updated
-      const currentStatus = await contract.methods
-        .workflowStatus()
-        .call({ from: accounts[0] });
-      console.log("workflowStatus:", currentStatus);
-      if (currentStatus) {
-        setWorkflowStatus(parseInt(currentStatus));
-        //workflowStatus = parseInt(currentStatus);
-      }
-    })();
-  }, [workflowStatus]);*/
 
   useEffect(() => {
     const tryInit = async () => {

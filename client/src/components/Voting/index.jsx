@@ -7,8 +7,13 @@ import VotersPanel from "./VotersPanel";
 import CurrentUser from "./CurrentUser";
 
 function Voting() {
+  const defaultVoter = {
+    isRegistered: false,
+    hasVoted: false,
+    votedProposalId: 0,
+  };
   const [workflowStatus, setWorkflowStatus] = useState(0);
-  const [voter, setVoter] = useState(null);
+  const [voter, setVoter] = useState(defaultVoter);
   const {
     state: { artifact, accounts, contract, isAdmin },
   } = useEth();
@@ -35,6 +40,7 @@ function Voting() {
       } catch (error) {
         if (error.message && error.message.includes("You're not a voter")) {
           console.info("Current user is not a voter");
+          setVoter(defaultVoter);
         }
       }
     })();

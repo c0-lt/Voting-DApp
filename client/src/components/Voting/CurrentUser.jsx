@@ -3,13 +3,14 @@ import { WorkflowStatusNames } from "../../contexts/EthContext/state";
 import useEth from "../../contexts/EthContext/useEth";
 
 function CurrentUser({ workflowStatus, voter }) {
-  //const [voter, setVoter] = useState(null);
   const {
-    state: { accounts, contract, isAdmin },
+    state: { accounts, isAdmin },
   } = useEth();
 
   let registered = "❌";
   let hasVoted = "";
+
+  console.log("voter in currentUser : ", voter);
 
   if (voter && voter.isRegistered) {
     registered = "✅";
