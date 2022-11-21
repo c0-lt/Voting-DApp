@@ -38,16 +38,17 @@ function AddProposalBtn({ workflowStatus, voter }) {
       {voter &&
         voter.isRegistered &&
         workflowStatus === WorkflowStatus.ProposalsRegistrationStarted && (
-          <button onClick={write} className="input-btn">
-            Add a proposal(
+          <>
+            <button onClick={write} className="input-btn">
+              Add a proposal
+            </button>
             <input
               type="text"
               placeholder="Chicken wings"
               value={inputValue}
               onChange={handleInputChange}
             />
-            )
-          </button>
+          </>
         )}
     </div>
   );

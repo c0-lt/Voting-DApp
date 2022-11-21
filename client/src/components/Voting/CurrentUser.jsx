@@ -7,19 +7,16 @@ import useEth from "../../contexts/EthContext/useEth";
 
 function CurrentUser({ workflowStatus, voter }) {
   const [winningProp, setWinningProp] = useState(0);
+  const [isRegistered, setIsRegistered] = useState("❌");
+  const [hasVoted, setHasVoted] = useState("⏳");
   const {
     state: { accounts, isAdmin, contract },
   } = useEth();
 
-  let registered = "❌";
-  let hasVoted = "";
-
-  console.log("voter in currentUser : ", voter);
-
-  if (voter && voter.isRegistered) {
-    registered = "✅";
-    hasVoted = voter.hasVoted ? "✅" : "⏳";
-  }
+  useEffect(() => {
+    setHasVoted(voter.hasVoted ? "✅" : "⏳");
+    setIsRegistered(voter.isRegistered ? "✅" : "❌");
+  }, [voter]);
 
   useEffect(() => {
     (async function () {
@@ -42,15 +39,17 @@ function CurrentUser({ workflowStatus, voter }) {
       </div>
       <br />
       <b>Connected user {isAdmin && "👑"}: </b> {accounts[0]}
-      {voter && voter.isRegistered && (
+      {voter && (
         <>
           <div>
-            <b>Registered voter :</b> {registered}
-          </div>
-          <div>
-            <b>Has voted :</b> {hasVoted}
+            <b>Registered voter :</b> {isRegistered}
           </div>
         </>
+      )}
+      {voter && voter.isRegistered && (
+        <div>
+          <b>Has voted :</b> {hasVoted}
+        </div>
       )}
       <br />
       <div className="winningProp">

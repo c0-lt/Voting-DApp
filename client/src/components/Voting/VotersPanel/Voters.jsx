@@ -3,7 +3,7 @@ import useEth from "../../../contexts/EthContext/useEth";
 
 function Voters() {
   const [votersAddresses, setVotersAddresses] = useState([]);
-  const [eventList, setEventList] = useState([]);
+  const [votersList, setVotersList] = useState([]);
 
   const {
     state: { contract },
@@ -17,24 +17,25 @@ function Voters() {
           toBlock: "latest",
         });
 
-        let oldies = [];
+        let addresses = [];
         oldEvents.forEach((event) => {
-          oldies.push(event.returnValues.voterAddress);
+          addresses.push(event.returnValues.voterAddress);
         });
-        console.log("OLDIES : ", oldies);
+        console.log("Old events VoterRegistered : ", addresses);
 
-        setVotersAddresses(oldies);
+        setVotersAddresses(addresses);
 
         await contract.events
           .VoterRegistered({ fromBlock: "earliest" })
           .on("data", (event) => {
-            console.log("New event", event);
-            let newEvent = event.returnValues.voterAddress;
-
-            setVotersAddresses((votersAddresses) => [
-              ...votersAddresses,
-              newEvent,
-            ]);
+            console.log("New event VoterRegistered", event);
+            let newAddress = event.returnValues.voterAddress;
+            if (!votersAddresses.includes(newAddress)) {
+              setVotersAddresses((votersAddresses) => [
+                ...votersAddresses,
+                newAddress,
+              ]);
+            }
           })
           .on("changed", (changed) => console.log(changed))
           .on("error", (err) => console.error(err))
@@ -49,14 +50,14 @@ function Voters() {
     const votersLi = votersAddresses.map((data) => {
       return <li key={data}>{data}</li>;
     });
-    setEventList(votersLi);
+    setVotersList(votersLi);
   }, [votersAddresses]);
 
   return (
     <>
       <div>
-        {eventList.length > 0 ? (
-          <ul>{eventList}</ul>
+        {votersList.length > 0 ? (
+          <ul>{votersList}</ul>
         ) : (
           "No voters registered yet"
         )}

@@ -89,6 +89,7 @@ table th {
 }
 table td {
   padding: 10px;
+  vertical-align: top;
 }
 
 #App .container .welcome h1 {
@@ -157,6 +158,6 @@ table td {
   color: #1266cc;
 }
 
-.adminPanel .btns{
+.adminPanel, .votersPanel .btns{
   padding: 1px;
 }

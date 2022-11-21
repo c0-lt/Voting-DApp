@@ -19,6 +19,7 @@ function ListProposals({ workflowStatus, voter, setVoter }) {
     setVoter(copiedVoter);
   };
 
+  // Listen for ProposalRegistered event
   useEffect(() => {
     (async function () {
       if (contract) {
@@ -27,23 +28,23 @@ function ListProposals({ workflowStatus, voter, setVoter }) {
           toBlock: "latest",
         });
 
-        let oldies = [];
+        let oldProps = [];
         oldEvents.forEach((event) => {
-          if (!oldies.includes(event.returnValues.proposalId)) {
-            oldies.push(event.returnValues.proposalId);
+          let prop = event.returnValues.proposalId;
+          if (!oldProps.includes(prop)) {
+            oldProps.push(prop);
           }
         });
-        console.log("old proposals : ", oldies);
-
-        setProposalsID(oldies);
+        console.log("Old events ProposalRegistered: ", oldProps);
+        setProposalsID(oldProps);
 
         await contract.events
           .ProposalRegistered({ fromBlock: "earliest" })
           .on("data", (event) => {
             console.log("New event prop registered", event);
-            let newEvent = event.returnValues.proposalId;
-            if (!proposalsID.includes(newEvent)) {
-              setProposalsID((proposalsID) => [...proposalsID, newEvent]);
+            let newProp = event.returnValues.proposalId;
+            if (!proposalsID.includes(newProp)) {
+              setProposalsID((proposalsID) => [...proposalsID, newProp]);
             }
           })
           .on("changed", (changed) => console.log(changed))
@@ -55,46 +56,52 @@ function ListProposals({ workflowStatus, voter, setVoter }) {
     })();
   }, []);
 
+  // Retrieve proposals descriptions
   useEffect(() => {
     (async function () {
-      console.log("proposals : ", proposalsID);
-      let props = [];
-      let retrievedProp;
+      if (contract && voter.isRegistered) {
+        console.log("Proposals IDs: ", proposalsID);
+        let props = [];
+        let retrievedProp;
 
-      for (var i = 0; i < proposalsID.length; i++) {
-        try {
-          retrievedProp = await contract.methods
-            .getOneProposal(proposalsID[i])
-            .call({ from: accounts[0] });
-        } catch (error) {
-          if (error.message && error.message.includes("You're not a voter")) {
-            console.info("Current user is not a voter");
+        for (var i = 0; i < proposalsID.length; i++) {
+          try {
+            retrievedProp = await contract.methods
+              .getOneProposal(proposalsID[i])
+              .call({ from: accounts[0] });
+          } catch (error) {
+            if (error.message && error.message.includes("You're not a voter")) {
+              console.info("Current user is not a voter");
+            }
           }
+
+          let copiedProp = Object.assign({}, retrievedProp);
+          // We add the proposalId to the prop
+          copiedProp["proposalId"] = proposalsID[i];
+          props.push(copiedProp);
         }
+        console.log("Props : ", props);
+        console.log("voter in listprop", voter);
 
-        let copiedProp = Object.assign({}, retrievedProp);
-        // We add the proposalId to the prop
-        copiedProp["proposalId"] = proposalsID[i];
-        props.push(copiedProp);
+        const propList = props.map((data) => {
+          return (
+            <li key={data.proposalId}>
+              {data.description} - Vote(s) : {data.voteCount}
+              {workflowStatus === WorkflowStatus.VotingSessionStarted &&
+                voter.isRegistered &&
+                !voter.hasVoted && (
+                  <>
+                    {" - "}
+                    <button onClick={vote} name={data.proposalId}>
+                      Vote 🗳
+                    </button>
+                  </>
+                )}
+            </li>
+          );
+        });
+        setProposals(propList);
       }
-      console.log("Props : ", props);
-      console.log("voter in listprop", voter);
-
-      const propList = props.map((data) => {
-        return (
-          <li key={data.proposalId}>
-            {data.description} - Vote(s) : {data.voteCount}{" "}
-            {workflowStatus === WorkflowStatus.VotingSessionStarted &&
-              voter.isRegistered &&
-              !voter.hasVoted && (
-                <button onClick={vote} name={data.proposalId}>
-                  Vote for this proposal
-                </button>
-              )}
-          </li>
-        );
-      });
-      setProposals(propList);
     })();
   }, [proposalsID, accounts, voter]);
 

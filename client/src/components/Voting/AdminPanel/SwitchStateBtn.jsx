@@ -70,11 +70,12 @@ function SwitchStateBtn({ workflowStatus, setWorkflowStatus }) {
   return (
     <div className="btns">
       {workflowStatus < 5 ? (
-        <button onClick={switchStatus}>
-          Switch to next status : {WorkflowStatusNames[workflowStatus + 1]}
-        </button>
+        <>
+          <button onClick={switchStatus}> Switch to next status </button> (=>
+          {WorkflowStatusNames[workflowStatus + 1]})
+        </>
       ) : (
-        "Voting session is over"
+        <>Voting session is over</>
       )}
     </div>
   );
