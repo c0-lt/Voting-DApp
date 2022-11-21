@@ -2,11 +2,9 @@ import { useState, useEffect } from "react";
 import { WorkflowStatus } from "../../../contexts/EthContext/state";
 import useEth from "../../../contexts/EthContext/useEth";
 
-function ListProposals({ workflowStatus, voter }) {
+function ListProposals({ workflowStatus, voter, setVoter }) {
   const [proposalsID, setProposalsID] = useState([]);
   const [proposals, setProposals] = useState([]);
-  const [hasVoted, setHasVoted] = useState(false);
-
   const {
     state: { contract, accounts },
   } = useEth();
@@ -14,39 +12,48 @@ function ListProposals({ workflowStatus, voter }) {
   const vote = async (e) => {
     console.log("Vote for : ", e.target.name);
     await contract.methods.setVote(e.target.name).send({ from: accounts[0] });
-    setHasVoted(true);
+
+    let copiedVoter = Object.assign({}, voter);
+    // We update the voter
+    copiedVoter["hasVoted"] = true;
+    setVoter(copiedVoter);
   };
 
   useEffect(() => {
     (async function () {
-      let oldEvents = await contract.getPastEvents("ProposalRegistered", {
-        fromBlock: 0,
-        toBlock: "latest",
-      });
+      if (contract) {
+        let oldEvents = await contract.getPastEvents("ProposalRegistered", {
+          fromBlock: 0,
+          toBlock: "latest",
+        });
 
-      let oldies = [];
-      oldEvents.forEach((event) => {
-        oldies.push(event.returnValues.proposalId);
-      });
-      console.log("old proposals : ", oldies);
+        let oldies = [];
+        oldEvents.forEach((event) => {
+          if (!oldies.includes(event.returnValues.proposalId)) {
+            oldies.push(event.returnValues.proposalId);
+          }
+        });
+        console.log("old proposals : ", oldies);
 
-      setProposalsID(oldies);
+        setProposalsID(oldies);
 
-      await contract.events
-        .ProposalRegistered({ fromBlock: "earliest" })
-        .on("data", (event) => {
-          console.log("New event", event);
-          let newEvent = event.returnValues.proposalId;
-
-          setProposalsID((oldies) => [...oldies, newEvent]);
-        })
-        .on("changed", (changed) => console.log(changed))
-        .on("error", (err) => console.error(err))
-        .on("connected", (str) =>
-          console.log("Connected subscription ID : ", str)
-        );
+        await contract.events
+          .ProposalRegistered({ fromBlock: "earliest" })
+          .on("data", (event) => {
+            console.log("New event prop registered", event);
+            let newEvent = event.returnValues.proposalId;
+            if (!proposalsID.includes(newEvent)) {
+              setProposalsID((proposalsID) => [...proposalsID, newEvent]);
+            }
+          })
+          .on("changed", (changed) => console.log(changed))
+          .on("error", (err) => console.error(err))
+          .on("connected", (str) =>
+            console.log("Connected subscription ID : ", str)
+          );
+      }
     })();
-  }, [contract, accounts]);
+  }, []);
 
   useEffect(() => {
     (async function () {
@@ -71,6 +78,7 @@ function ListProposals({ workflowStatus, voter }) {
         props.push(copiedProp);
       }
       console.log("Props : ", props);
+      console.log("voter in listprop", voter);
 
       const propList = props.map((data) => {
         return (
@@ -88,15 +96,14 @@ function ListProposals({ workflowStatus, voter }) {
       });
       setProposals(propList);
     })();
-  }, [accounts, contract, proposalsID]);
+  }, [proposalsID, accounts, voter]);
 
   return (
     <>
-      <h3>Proposals list</h3>
       <div>
-        {voter.isRegistered ? (
+        {voter && voter.isRegistered ? (
           proposals.length > 0 ? (
-            <ul>{proposals}</ul>
+            <ol>{proposals}</ol>
           ) : (
             "No proposals yet"
           )

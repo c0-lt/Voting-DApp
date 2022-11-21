@@ -1,17 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { WorkflowStatus } from "../../../contexts/EthContext/state";
 import useEth from "../../../contexts/EthContext/useEth";
 
-function AddProposalBtn({ workflowStatus }) {
+function AddProposalBtn({ workflowStatus, voter }) {
   const {
     state: { contract, accounts },
   } = useEth();
   const [inputValue, setInputValue] = useState("");
 
   const handleInputChange = (e) => {
-    //if (/^.+$|^$/.test(e.target.value)) {
     setInputValue(e.target.value);
-    //}
   };
 
   const write = async (e) => {
@@ -37,18 +35,20 @@ function AddProposalBtn({ workflowStatus }) {
 
   return (
     <div className="btns">
-      {workflowStatus === WorkflowStatus.ProposalsRegistrationStarted && (
-        <button onClick={write} className="input-btn">
-          Add a proposal(
-          <input
-            type="text"
-            placeholder="Chicken wings"
-            value={inputValue}
-            onChange={handleInputChange}
-          />
-          )
-        </button>
-      )}
+      {voter &&
+        voter.isRegistered &&
+        workflowStatus === WorkflowStatus.ProposalsRegistrationStarted && (
+          <button onClick={write} className="input-btn">
+            Add a proposal(
+            <input
+              type="text"
+              placeholder="Chicken wings"
+              value={inputValue}
+              onChange={handleInputChange}
+            />
+            )
+          </button>
+        )}
     </div>
   );
 }

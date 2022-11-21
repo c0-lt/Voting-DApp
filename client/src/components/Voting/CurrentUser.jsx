@@ -1,10 +1,14 @@
 import { useState, useEffect } from "react";
-import { WorkflowStatusNames } from "../../contexts/EthContext/state";
+import {
+  WorkflowStatusNames,
+  WorkflowStatus,
+} from "../../contexts/EthContext/state";
 import useEth from "../../contexts/EthContext/useEth";
 
 function CurrentUser({ workflowStatus, voter }) {
+  const [winningProp, setWinningProp] = useState(0);
   const {
-    state: { accounts, isAdmin },
+    state: { accounts, isAdmin, contract },
   } = useEth();
 
   let registered = "❌";
@@ -17,13 +21,25 @@ function CurrentUser({ workflowStatus, voter }) {
     hasVoted = voter.hasVoted ? "✅" : "⏳";
   }
 
+  useEffect(() => {
+    (async function () {
+      if (workflowStatus === WorkflowStatus.VotesTallied) {
+        setWinningProp(
+          await contract.methods.winningProposalID().call({ from: accounts[0] })
+        );
+      }
+    })();
+  }, [workflowStatus]);
+
   return (
     <>
       <br />
-      <b>
-        <i>Voting status : </i>
-      </b>
-      <i>{WorkflowStatusNames[workflowStatus]}</i>
+      <div className="votingStatus">
+        <b>
+          <i>Voting status : </i>
+        </b>
+        <i>{WorkflowStatusNames[workflowStatus]}</i>
+      </div>
       <br />
       <b>Connected user {isAdmin && "👑"}: </b> {accounts[0]}
       {voter && voter.isRegistered && (
@@ -36,6 +52,12 @@ function CurrentUser({ workflowStatus, voter }) {
           </div>
         </>
       )}
+      <br />
+      <div className="winningProp">
+        {winningProp > 0 && (
+          <b>🏆 Winning proposal is number {winningProp} ! 🏆</b>
+        )}
+      </div>
     </>
   );
 }

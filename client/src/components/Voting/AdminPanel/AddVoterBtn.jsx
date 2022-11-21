@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { WorkflowStatus } from "../../../contexts/EthContext/state";
 import useEth from "../../../contexts/EthContext/useEth";
 
@@ -7,8 +7,6 @@ function AddVoterBtn({ workflowStatus }) {
     state: { contract, accounts },
   } = useEth();
   const [inputValue, setInputValue] = useState("");
-  const [registration, setRegistration] = useState(false);
-
   const handleInputChange = (e) => {
     if (/^.+$|^$/.test(e.target.value)) {
       setInputValue(e.target.value);
@@ -37,16 +35,17 @@ function AddVoterBtn({ workflowStatus }) {
   return (
     <div className="btns">
       {workflowStatus === WorkflowStatus.RegisteringVoters && (
-        <button onClick={write} className="input-btn">
-          Add a voter(
+        <>
+          <button onClick={write} className="input-btn">
+            Add a voter
+          </button>
           <input
             type="text"
             placeholder="0x0abc..."
             value={inputValue}
             onChange={handleInputChange}
           />
-          )
-        </button>
+        </>
       )}
     </div>
   );

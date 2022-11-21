@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import useEth from "../../../contexts/EthContext/useEth";
 import {
   WorkflowStatus,
@@ -69,9 +69,13 @@ function SwitchStateBtn({ workflowStatus, setWorkflowStatus }) {
   };
   return (
     <div className="btns">
-      <button onClick={switchStatus}>
-        Switch to next status : {WorkflowStatusNames[workflowStatus + 1]}
-      </button>
+      {workflowStatus < 5 ? (
+        <button onClick={switchStatus}>
+          Switch to next status : {WorkflowStatusNames[workflowStatus + 1]}
+        </button>
+      ) : (
+        "Voting session is over"
+      )}
     </div>
   );
 }

@@ -14,6 +14,7 @@ function Voting() {
   };
   const [workflowStatus, setWorkflowStatus] = useState(0);
   const [voter, setVoter] = useState(defaultVoter);
+  const [admPanel, setAdmPanel] = useState();
   const {
     state: { artifact, accounts, contract, isAdmin },
   } = useEth();
@@ -29,41 +30,68 @@ function Voting() {
         if (currentStatus) {
           setWorkflowStatus(parseInt(currentStatus));
         }
-      }
-      //Check if current user is a registered voter. If so, voter will be defined
-      try {
-        setVoter(
-          await contract.methods
+
+        //Check if current user is a registered voter. If so, voter will be defined
+        try {
+          let currentVoter = await contract.methods
             .getVoter(accounts[0])
-            .call({ from: accounts[0] })
-        );
-      } catch (error) {
-        if (error.message && error.message.includes("You're not a voter")) {
-          console.info("Current user is not a voter");
-          setVoter(defaultVoter);
+            .call({ from: accounts[0] });
+          setVoter(currentVoter);
+        } catch (error) {
+          if (error.message && error.message.includes("You're not a voter")) {
+            console.info("Current user is not a voter");
+            setVoter(defaultVoter);
+          }
         }
       }
+
+      /*const voting = (
+        <>
+          <CurrentUser workflowStatus={workflowStatus} voter={voter} />
+          <hr />
+          {isAdmin && (
+            <>
+              <div>
+                <AdminPanel
+                  workflowStatus={workflowStatus}
+                  setWorkflowStatus={setWorkflowStatus}
+                />
+              </div>
+              <hr />
+            </>
+          )}
+          <VotersPanel workflowStatus={workflowStatus} voter={voter} />
+        </>
+      );*/
     })();
   }, [contract, workflowStatus, accounts]);
 
-  const voting = (
-    <>
-      <CurrentUser workflowStatus={workflowStatus} voter={voter} />
-      <hr />
-      {isAdmin && (
+  useEffect(() => {
+    (async function () {
+      setAdmPanel(
         <>
-          <div>
-            <AdminPanel
-              workflowStatus={workflowStatus}
-              setWorkflowStatus={setWorkflowStatus}
-            />
-          </div>
+          <CurrentUser workflowStatus={workflowStatus} voter={voter} />
           <hr />
+          {isAdmin && (
+            <>
+              <div>
+                <AdminPanel
+                  workflowStatus={workflowStatus}
+                  setWorkflowStatus={setWorkflowStatus}
+                />
+              </div>
+              <hr />
+            </>
+          )}
+          <VotersPanel
+            workflowStatus={workflowStatus}
+            voter={voter}
+            setVoter={setVoter}
+          />
         </>
-      )}
-      <VotersPanel workflowStatus={workflowStatus} voter={voter} />
-    </>
-  );
+      );
+    })();
+  }, [workflowStatus, voter, isAdmin]);
 
   return (
     <div className="demo">
@@ -72,7 +100,7 @@ function Voting() {
       ) : !contract ? (
         <NoticeWrongNetwork />
       ) : (
-        voting
+        admPanel
       )}
     </div>
   );
