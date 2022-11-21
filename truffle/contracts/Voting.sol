@@ -73,10 +73,6 @@ contract Voting is Ownable {
             "Voters registration is not open yet"
         );
         require(voters[_addr].isRegistered != true, "Already registered");
-        require(
-            proposalsArray.length < 100,
-            "The max number of proposals has been reached"
-        );
 
         voters[_addr].isRegistered = true;
         emit VoterRegistered(_addr);
@@ -92,7 +88,13 @@ contract Voting is Ownable {
         require(
             keccak256(abi.encode(_desc)) != keccak256(abi.encode("")),
             "Vous ne pouvez pas ne rien proposer"
-        ); // facultatif
+        );
+        // Avoid Dos Gas Limit
+        require(
+            proposalsArray.length < 100,
+            "The max number of proposals has been reached"
+        );
+
         // voir que desc est different des autres
 
         Proposal memory proposal;
