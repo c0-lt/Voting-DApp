@@ -3,20 +3,31 @@
 pragma solidity 0.8.17;
 import "../node_modules/@openzeppelin/contracts/access/Ownable.sol";
 
+/// @title The Voting Smart Contract
+/// @author Cycy la famille
+/// @notice Smart Contract pour soumettre des propositions et voter pour celle que l'on préfère
+/// @dev Stay away from this or you're facing sleep deprivation
 contract Voting is Ownable {
+    /// @notice index de la proposition gagnante
     uint256 public winningProposalID;
 
     struct Voter {
+        /// @notice booleen permettant de savoir si le voter est inscrit
         bool isRegistered;
+        /// @notice booleen permettant de savoir si le voter a voté
         bool hasVoted;
+        /// @notice id de la proposition pour laquelle le voter a voté
         uint256 votedProposalId;
     }
 
     struct Proposal {
+        /// @notice description de la proposition
         string description;
+        /// @notice nombre de votes de la proposition
         uint256 voteCount;
     }
 
+    /// @notice : enum permettant de définir l'ensemble des status possibles de la session de vote
     enum WorkflowStatus {
         RegisteringVoters,
         ProposalsRegistrationStarted,
@@ -27,17 +38,37 @@ contract Voting is Ownable {
     }
 
     WorkflowStatus public workflowStatus;
+    /// @notice contient l'ensemble des propositions
     Proposal[] proposalsArray;
+    /// @notice whitelist des voters
     mapping(address => Voter) voters;
 
+    /// @notice notifie lorsqu'un voter est ajouté
+    /// @dev emit de l'event VoterRegistered
+    /// @param voterAddress adresse du votant ajoutée
     event VoterRegistered(address voterAddress);
+
+    /// @notice notifie lorsque le statut est changé
+    /// @dev emit de l'event WorkflowStatusChange avec le statut avant et apres le changement
+    /// @param previousStatus WorkflowStatus précédent le changement
+    /// @param newStatus WorkflowStatus après le changement
     event WorkflowStatusChange(
         WorkflowStatus previousStatus,
         WorkflowStatus newStatus
     );
+
+    /// @notice notifie lorsqu'une proposition est ajoutée
+    /// @dev emit de l'event ProposalRegistered
+    /// @param proposalId index de la proposition ajoutée
     event ProposalRegistered(uint256 proposalId);
+
+    /// @notice notifie lorsqu'un voter a voté
+    /// @dev emit de l'event Voted avec l'adresse du votant et l'index de la proposition
+    /// @param voter adresse du votant ajouté
+    /// @param proposalId index de la proposition votée
     event Voted(address voter, uint256 proposalId);
 
+    /// @dev revert si la fonction n'est pas appelée par un voter
     modifier onlyVoters() {
         require(voters[msg.sender].isRegistered, "You're not a voter");
         _;
@@ -47,6 +78,10 @@ contract Voting is Ownable {
 
     // ::::::::::::: GETTERS ::::::::::::: //
 
+    /// @notice Retourne un voter à partir de son adresse
+    /// @dev Retourne Voter
+    /// @param _addr adresse d'un voter
+    /// @return Voter Retourne un objet Voter représentant le votant
     function getVoter(address _addr)
         external
         view
@@ -56,6 +91,10 @@ contract Voting is Ownable {
         return voters[_addr];
     }
 
+    /// @notice Retourne la proposition à partir de son index dans le tableau des propositions
+    /// @dev retourne une Proposal
+    /// @param _id index de la proposition dans proposalsArray
+    /// @return Proposal Retourne un objet Proposal
     function getOneProposal(uint256 _id)
         external
         view
@@ -67,6 +106,9 @@ contract Voting is Ownable {
 
     // ::::::::::::: REGISTRATION ::::::::::::: //
 
+    /// @notice Ajoute un voter dans le tableau de voters
+    /// @dev revert si pas appelée par owner
+    /// @param _addr adresse du voter
     function addVoter(address _addr) external onlyOwner {
         require(
             workflowStatus == WorkflowStatus.RegisteringVoters,
@@ -80,6 +122,9 @@ contract Voting is Ownable {
 
     // ::::::::::::: PROPOSAL ::::::::::::: //
 
+    /// @notice Ajoute une proposition dans proposalsArray
+    /// @dev Revert si appelé par non votant. Revert si proposition vite. Revert si appelé dans un mauvais workflowStatus
+    /// @param _desc description de la proposition
     function addProposal(string calldata _desc) external onlyVoters {
         require(
             workflowStatus == WorkflowStatus.ProposalsRegistrationStarted,
@@ -105,6 +150,8 @@ contract Voting is Ownable {
 
     // ::::::::::::: VOTE ::::::::::::: //
 
+    /// @notice Permet à un voter de voter
+    /// @param _id index de la proposition dans proposalsArray
     function setVote(uint256 _id) external onlyVoters {
         require(
             workflowStatus == WorkflowStatus.VotingSessionStarted,
@@ -122,6 +169,8 @@ contract Voting is Ownable {
 
     // ::::::::::::: STATE ::::::::::::: //
 
+    /// @notice Autorise la soumission des propositions
+    /// @dev Revert si appelée par une personne non propritaire. Revert si appelé dans un mauvais workflowStatus.
     function startProposalsRegistering() external onlyOwner {
         require(
             workflowStatus == WorkflowStatus.RegisteringVoters,
@@ -139,6 +188,8 @@ contract Voting is Ownable {
         );
     }
 
+    /// @notice Ferme la session d'ajout de propositions
+    /// @dev Revert si appelée par une personne non propritaire. Revert si appelé dans un mauvais workflowStatus.
     function endProposalsRegistering() external onlyOwner {
         require(
             workflowStatus == WorkflowStatus.ProposalsRegistrationStarted,
@@ -151,6 +202,8 @@ contract Voting is Ownable {
         );
     }
 
+    /// @notice Autorise la session de vote
+    /// @dev Revert si appelée par une personne non propritaire. Revert si appelée dans un mauvais workflowStatus.
     function startVotingSession() external onlyOwner {
         require(
             workflowStatus == WorkflowStatus.ProposalsRegistrationEnded,
@@ -163,6 +216,8 @@ contract Voting is Ownable {
         );
     }
 
+    /// @notice Termine la session de vote
+    /// @dev Revert si appelée par une personne non propritaire. Revert si appelée dans un mauvais workflowStatus.
     function endVotingSession() external onlyOwner {
         require(
             workflowStatus == WorkflowStatus.VotingSessionStarted,
@@ -175,6 +230,8 @@ contract Voting is Ownable {
         );
     }
 
+    /// @notice Définit la proposition gagnante du vote
+    /// @dev Revert si appelée par une personne non propritaire. Revert si appelée dans un mauvais workflowStatus.
     function tallyVotes() external onlyOwner {
         require(
             workflowStatus == WorkflowStatus.VotingSessionEnded,
