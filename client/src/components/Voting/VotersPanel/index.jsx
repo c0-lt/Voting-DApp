@@ -1,13 +1,8 @@
 import AddProposalBtn from "./AddProposalBtn";
-//import useEth from "../../../contexts/EthContext/useEth";
 import Voters from "./Voters";
 import ListProposals from "./ListProposals";
 
 function VotersPanel({ workflowStatus, voter, setVoter }) {
-  /*const {
-    state: { isAdmin },
-  } = useEth();*/
-
   return (
     <div className="votersPanel">
       <h2>📨 Voting board 📨</h2>

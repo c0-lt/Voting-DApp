@@ -7,6 +7,7 @@ function AddVoterBtn({ workflowStatus }) {
     state: { contract, accounts },
   } = useEth();
   const [inputValue, setInputValue] = useState("");
+  
   const handleInputChange = (e) => {
     if (/^.+$|^$/.test(e.target.value)) {
       setInputValue(e.target.value);

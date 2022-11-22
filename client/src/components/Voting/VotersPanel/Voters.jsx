@@ -9,6 +9,7 @@ function Voters() {
     state: { contract },
   } = useEth();
 
+  // Listen for VoterRegistered event
   useEffect(() => {
     (async function () {
       if (contract) {
@@ -46,6 +47,7 @@ function Voters() {
     })();
   }, [contract]);
 
+  // Add the voters addresses
   useEffect(() => {
     const votersLi = votersAddresses.map((data) => {
       return (

@@ -44,25 +44,6 @@ function Voting() {
           }
         }
       }
-
-      /*const voting = (
-        <>
-          <CurrentUser workflowStatus={workflowStatus} voter={voter} />
-          <hr />
-          {isAdmin && (
-            <>
-              <div>
-                <AdminPanel
-                  workflowStatus={workflowStatus}
-                  setWorkflowStatus={setWorkflowStatus}
-                />
-              </div>
-              <hr />
-            </>
-          )}
-          <VotersPanel workflowStatus={workflowStatus} voter={voter} />
-        </>
-      );*/
     })();
   }, [contract, workflowStatus, accounts]);
 
