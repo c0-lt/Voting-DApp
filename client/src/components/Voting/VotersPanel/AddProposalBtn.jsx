@@ -12,7 +12,7 @@ function AddProposalBtn({ workflowStatus, voter }) {
     setInputValue(e.target.value);
   };
 
-  const write = async (e) => {
+  const registerProposal = async (e) => {
     if (e.target.tagName === "INPUT") {
       return;
     }
@@ -28,7 +28,7 @@ function AddProposalBtn({ workflowStatus, voter }) {
       setInputValue("");
     } catch (error) {
       var msg = error.reason ? error.reason : error.stack;
-      console.log(msg);
+      error.log(msg);
       alert(msg);
     }
   };
@@ -39,7 +39,7 @@ function AddProposalBtn({ workflowStatus, voter }) {
         voter.isRegistered &&
         workflowStatus === WorkflowStatus.ProposalsRegistrationStarted && (
           <>
-            <button onClick={write} className="input-btn">
+            <button onClick={registerProposal} className="input-btn">
               Add a proposal
             </button>
             &nbsp;

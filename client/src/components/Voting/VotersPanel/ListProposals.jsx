@@ -60,10 +60,10 @@ function ListProposals({ workflowStatus, voter, setVoter }) {
   useEffect(() => {
     (async function () {
       if (contract && voter && voter.isRegistered) {
-        console.log("Proposals IDs: ", proposalsID);
         let props = [];
         let retrievedProp;
 
+        // Rtrieve each description for proposal ID
         for (var i = 0; i < proposalsID.length; i++) {
           try {
             retrievedProp = await contract.methods
@@ -76,12 +76,10 @@ function ListProposals({ workflowStatus, voter, setVoter }) {
           }
 
           let copiedProp = Object.assign({}, retrievedProp);
-          // We add the proposalId to the prop
+          // We add the proposalId to the prop for HTML logic
           copiedProp["proposalId"] = proposalsID[i];
           props.push(copiedProp);
         }
-        console.log("Props : ", props);
-        console.log("voter in listprop", voter);
 
         const propList = props.map((data) => {
           return (

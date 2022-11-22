@@ -12,7 +12,7 @@ function EthProvider({ children }) {
       const accounts = await web3.eth.requestAccounts();
       const networkID = await web3.eth.net.getId();
       const { abi } = artifact;
-      let address, contract, isAdmin; //, voter; //, workflowStatus;
+      let address, contract, isAdmin;
 
       try {
         address = artifact.networks[networkID].address;

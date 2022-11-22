@@ -7,14 +7,14 @@ function AddVoterBtn({ workflowStatus }) {
     state: { contract, accounts },
   } = useEth();
   const [inputValue, setInputValue] = useState("");
-  
+
   const handleInputChange = (e) => {
     if (/^.+$|^$/.test(e.target.value)) {
       setInputValue(e.target.value);
     }
   };
 
-  const write = async (e) => {
+  const registerVoter = async (e) => {
     if (e.target.tagName === "INPUT") {
       return;
     }
@@ -28,7 +28,7 @@ function AddVoterBtn({ workflowStatus }) {
       setInputValue("");
     } catch (error) {
       var msg = error.reason ? error.reason : error.stack;
-      console.log(msg);
+      console.error(msg);
       alert(msg);
     }
   };
@@ -37,7 +37,7 @@ function AddVoterBtn({ workflowStatus }) {
     <div className="btns">
       {workflowStatus === WorkflowStatus.RegisteringVoters && (
         <>
-          <button onClick={write} className="input-btn">
+          <button onClick={registerVoter} className="input-btn">
             Add a voter
           </button>
           &nbsp;
