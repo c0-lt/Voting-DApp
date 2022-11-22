@@ -31,9 +31,9 @@ The frontend is available via Vercel at the following URL : https://voting-d-app
 
 - The smart contract (Voting.sol) has been commented.
 - The Dos Gas Limit on the number of proposals has been patched with a require to limit proposals up to a 100.
-- Deployment of the smart contract on Goerli testnet
-- Deployment of the frontend on Vercel PaaS
-- Explain the complete voting workflow from admin & voter perspective in a video : TODO
+- Deployment of the smart contract on Goerli testnet.
+- Deployment of the frontend on Vercel PaaS.
+- Explain the complete voting workflow from admin & voter perspective in a video [here](https://www.loom.com/share/e8f4d51a36e4441fba0a6c1df460bad6).
 
 ## Disclaimer
 
