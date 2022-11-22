@@ -42,9 +42,12 @@ function AddProposalBtn({ workflowStatus, voter }) {
             <button onClick={write} className="input-btn">
               Add a proposal
             </button>
+            &nbsp;
             <input
               type="text"
-              placeholder="Chicken wings"
+              size="40"
+              className="input-field"
+              placeholder="Gencives de porc"
               value={inputValue}
               onChange={handleInputChange}
             />

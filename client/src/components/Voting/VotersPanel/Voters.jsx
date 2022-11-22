@@ -48,7 +48,11 @@ function Voters() {
 
   useEffect(() => {
     const votersLi = votersAddresses.map((data) => {
-      return <li key={data}>{data}</li>;
+      return (
+        <li key={data} className="design-padd">
+          {data}
+        </li>
+      );
     });
     setVotersList(votersLi);
   }, [votersAddresses]);

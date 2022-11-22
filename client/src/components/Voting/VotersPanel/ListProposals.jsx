@@ -59,7 +59,7 @@ function ListProposals({ workflowStatus, voter, setVoter }) {
   // Retrieve proposals descriptions
   useEffect(() => {
     (async function () {
-      if (contract && voter.isRegistered) {
+      if (contract && voter && voter.isRegistered) {
         console.log("Proposals IDs: ", proposalsID);
         let props = [];
         let retrievedProp;
@@ -85,7 +85,7 @@ function ListProposals({ workflowStatus, voter, setVoter }) {
 
         const propList = props.map((data) => {
           return (
-            <li key={data.proposalId}>
+            <li key={data.proposalId} className="design-padd">
               {data.description} - Vote(s) : {data.voteCount}
               {workflowStatus === WorkflowStatus.VotingSessionStarted &&
                 voter.isRegistered &&

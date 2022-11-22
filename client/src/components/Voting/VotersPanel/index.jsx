@@ -10,7 +10,7 @@ function VotersPanel({ workflowStatus, voter, setVoter }) {
 
   return (
     <div className="votersPanel">
-      <h2>Voters panel</h2>
+      <h2>📨 Voting board 📨</h2>
       <AddProposalBtn workflowStatus={workflowStatus} voter={voter} />
       <table>
         <tbody>

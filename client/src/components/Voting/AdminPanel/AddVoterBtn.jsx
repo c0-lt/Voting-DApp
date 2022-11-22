@@ -39,8 +39,10 @@ function AddVoterBtn({ workflowStatus }) {
           <button onClick={write} className="input-btn">
             Add a voter
           </button>
+          &nbsp;
           <input
             type="text"
+            size="48"
             placeholder="0x0abc..."
             value={inputValue}
             onChange={handleInputChange}

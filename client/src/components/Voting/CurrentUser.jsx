@@ -14,8 +14,10 @@ function CurrentUser({ workflowStatus, voter }) {
   } = useEth();
 
   useEffect(() => {
-    setHasVoted(voter.hasVoted ? "✅" : "⏳");
-    setIsRegistered(voter.isRegistered ? "✅" : "❌");
+    if (voter) {
+      setHasVoted(voter.hasVoted ? "✅" : "⏳");
+      setIsRegistered(voter.isRegistered ? "✅" : "❌");
+    }
   }, [voter]);
 
   useEffect(() => {
@@ -47,11 +49,13 @@ function CurrentUser({ workflowStatus, voter }) {
         </>
       )}
       {voter && voter.isRegistered && (
-        <div>
-          <b>Has voted :</b> {hasVoted}
-        </div>
+        <>
+          <div>
+            <b>Has voted :</b> {hasVoted}
+          </div>
+          <br />
+        </>
       )}
-      <br />
       <div className="winningProp">
         {winningProp > 0 && (
           <b>🏆 Winning proposal is number {winningProp} ! 🏆</b>

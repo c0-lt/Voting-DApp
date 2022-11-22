@@ -81,7 +81,7 @@ p span.code {
 }
 
 hr {
-  margin: 4rem 0;
+  margin: 3rem 0;
 }
 
 table th {
@@ -134,7 +134,7 @@ table td {
   background-color: var(--dark-gray);
 }
 
-#App .container .demo .contract-container .btns .input-btn input {
+#App .container .demo .contract-container .btns .input-btn  {
   width: 4rem;
   text-align: center;
   font-family: monospace;
@@ -158,6 +158,21 @@ table td {
   color: #1266cc;
 }
 
-.adminPanel, .votersPanel .btns{
+.adminPanel .btns, .votersPanel .btns{
+  padding: 3px;
+}
+button.input-btn, input.input-field{
+  padding:3px
+}
+
+div.btns button, input{
+  padding:3px;
+}
+
+input:focus::placeholder {
+  color: transparent;
+}
+
+.design-padd {
   padding: 1px;
 }
